@@ -6,7 +6,7 @@ const rpc = ((w, d) => {
     return self;
   };
 
-  self.call = function call(procedure, ...params) {
+  self.call = function call(procedure, params) {
     return new Promise(function(resolve, reject) {
       const body = JSON.stringify({
         call: procedure,
@@ -27,6 +27,19 @@ const rpc = ((w, d) => {
       xhr.send(body);
     });
   };
+
+  self = new Proxy(self, {
+    get: function(target, prop) {
+
+      if (target[prop] === undefined) {
+        return function (...params) {
+          return self.call(prop, params);
+        }
+      }
+
+      return target[prop];
+    },
+  });
 
   return self;
 })(window, document);

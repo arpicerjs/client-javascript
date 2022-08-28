@@ -17,7 +17,12 @@ const rpc = ((w, d) => {
       xhr.onreadystatechange = function onreadystatechange(e) {
         if (e.target.readyState === 4) {
           if (e.target.status == 200) {
-            resolve(e.target.responseText);
+            try {
+              const parsedResult = JSON.parse(e.target.responseText);
+              resolve(parsedResult);
+            } catch(err) {
+              resolve(e.target.responseText);
+            }
           }
           reject(e);
         }
